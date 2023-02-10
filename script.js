@@ -15,16 +15,17 @@ let incompleteUl = document.querySelector('#items');
 let completeUl = document.querySelector('.complete-list ul');//selecting like css
 
 // functions
+// creating tank
 let createTask = function (task) {
     let listItem = document.createElement('li');
-    let listCheckBox = document.createElement('input');
-    let listLabel = document.createElement('label');
+    let checkBox = document.createElement('input');
+    let label = document.createElement('label');
 
-    listLabel.innerText = task;//newly created task item
-    listCheckBox.type = 'checkbox'; //like setting css attribute property
+    label.innerText = task;//newly created task item
+    checkBox.type = 'checkbox'; //like setting css attribute property
 
-    listItem.appendChild(listCheckBox);
-    listItem.appendChild(listLabel);
+    listItem.appendChild(checkBox);
+    listItem.appendChild(label);
 
     return listItem;
 }
@@ -32,16 +33,51 @@ let createTask = function (task) {
 // add task event
 let addTask = function (event) {
     event.preventDefault();
-    let newListItem = createTask(newTask.value);
-    incompleteUl.appendChild(newListItem);
+    let listItem = createTask(newTask.value);
+    incompleteUl.appendChild(listItem);
+    newTask.value = '';
     // bind the newlist item to incomplete list
-    bindInCompleteItems(newListItem, completeTask);
+    bindInCompleteItems(listItem, completeTask);
 }
 
+// completeTask
 let completeTask = function () {
+    let listItem = this.parentNode;
+    let deleteBtn = document.createElement('button');
+    deleteBtn.innerText = 'Delete';
+    deleteBtn.className = 'delete';
+    listItem.appendChild(deleteBtn);
+
+    let checkBox = listItem.querySelector('input[type="checkbox"]');
+    checkBox.remove();
+    completeUl.appendChild(listItem);
+    bindCompleteItems(listItem, deleteTask);
 }
 
-let bindInCompleteItems = function (taskItem, checkboxClick) {
-    let checkbox = taskItem.querySelector('input[type="checbox"]');
-    checkbox.onchange = checkboxClick
+let deleteTask = function () {
+    let listItem = this.parentNode;
+    let ul = listItem.parentNode;
+    ul.removeChild(listItem);
 }
+
+// binding task 
+let bindInCompleteItems = function (taskItem, checkBoxClick) {
+    let checkBox = taskItem.querySelector('input[type="checkbox"]');
+    checkBox.onchange = checkBoxClick;
+}
+
+let bindCompleteItems = function (taskItem, deleteBtnClick) {
+    let deleteButton = taskItem.querySelector('.delete');
+    deleteButton.onclick = deleteBtnClick;
+}
+
+
+for (let i = 0; i < incompleteUl.children.length; i++) {
+    bindInCompleteItems(incompleteUl.children[i], completeTask);
+}
+
+for (let i = 0; i < completeUl.children.length; i++) {
+    bindCompleteItems(completeUl.children[i], deleteTask);
+}
+
+form.addEventListener('submit', addTask);
